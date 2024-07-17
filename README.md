@@ -1,5 +1,5 @@
-# AAU-SpaceRob-AutoDrone
-This repository contains the code for Robotics Group 465 at AAU. The project was developed in collaboration with AAU Space Robotics and serves as a foundation for further development in preparation for the upcoming ERC competition.
+# AAU Space Robotics: Drone
+This repository contains the code for the AAU Space Robotics Drone.
 
 ### HARDWARE:
 - Unknown Carbon Fiber Drone Kit (V-shape)
@@ -12,8 +12,3 @@ This repository contains the code for Robotics Group 465 at AAU. The project was
 ### SOFTWARE:
 - Operating System: Jetson Nano Ubuntu 20.04 image
 - ROS2 Distribution: FOXY - Developed our own package.
-
-For more information, check out the documentation page: Wiki
-
-### TEST:
-The test folder contains the test data and scripts used to analyze the data in the report, for tests 2-5.
