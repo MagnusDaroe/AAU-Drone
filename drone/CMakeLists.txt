@@ -42,12 +42,12 @@
 	find_package(drone REQUIRED)
 
 	# Create Cpp executables - Controller_node
-	add_executable(Controller_node src/controller_task_test.cpp) # change name of node
-	ament_target_dependencies(Controller_node rclcpp drone)
+	add_executable(GPS src/GPS.cpp) # change name of node
+	ament_target_dependencies(GPS rclcpp drone)
 
 	# Install Cpp executables
 	install(TARGETS
-	Controller_node
+	#Controller_node
 	DESTINATION lib/${PROJECT_NAME}
 	)
 
@@ -59,11 +59,9 @@
 	scripts/fc_cmd.py
 	scripts/clock.py
 	scripts/manual_cmd.py
-	scripts/image_publish.py
-	scripts/image_listen.py
 	scripts/GCS.py
 	scripts/viconData.py
-	scripts/camera.py
+	scripts/GPS.py
 	scripts/emulateViconData.py
 	DESTINATION lib/${PROJECT_NAME} # change name of node in python
 	)
