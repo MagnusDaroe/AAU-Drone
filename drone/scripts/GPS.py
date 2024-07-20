@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 import serial
-from your_package_name.msg import GpsData  # Import the custom message
+from GPSData.msg import GpsData  # Import the custom message
 import math
 
 class SerialReader(Node):
