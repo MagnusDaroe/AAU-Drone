@@ -9,7 +9,7 @@ import math
 class SerialReader(Node):
     def __init__(self):
         super().__init__('serial_reader')
-        self.publisher_ = self.create_publisher(GPSData, 'esp32_data', 10)
+        self.publisher_ = self.create_publisher(GPSData, 'gps_data', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)
         
         self.serial_port = '/dev/ttyUSB0'  # Adjust to your serial port
