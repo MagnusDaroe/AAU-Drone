@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 #include <cmath>
+#include <unordered_map>
+#include <memory>
 
 using namespace std::chrono_literals;
 
@@ -22,7 +24,8 @@ public:
         try {
             serial_.setPort(serial_port_);
             serial_.setBaudrate(baud_rate_);
-            serial_.setTimeout(serial::Timeout::simpleTimeout(1000));
+            serial::Timeout timeout = serial::Timeout::simpleTimeout(1000);
+            serial_.setTimeout(timeout);
             serial_.open();
         } catch (serial::IOException &e) {
             RCLCPP_ERROR(this->get_logger(), "Unable to open port %s", serial_port_.c_str());
@@ -65,9 +68,9 @@ private:
         }
     }
 
-    std::shared_ptr<std::unordered_map<std::string, float>> parse_gps_data(const std::string& data)
+    std::shared_ptr<std::unordered_map<std::string, std::string>> parse_gps_data(const std::string& data)
     {
-        auto gps_data = std::make_shared<std::unordered_map<std::string, float>>();
+        auto gps_data = std::make_shared<std::unordered_map<std::string, std::string>>();
 
         auto parse_tag_value = [&data](const std::string& tag) -> std::string {
             std::string start_tag = "<" + tag + ">";
@@ -82,62 +85,25 @@ private:
             return "";
         };
 
-        try
-        {
-            (*gps_data)["lat"] = std::stof(parse_tag_value("lat"));
-        }
-        catch (...)
-        {
-            (*gps_data)["lat"] = NAN;
-        }
+        auto parse_float_tag_value = [&](const std::string& tag) -> float {
+            try
+            {
+                return std::stof(parse_tag_value(tag));
+            }
+            catch (...)
+            {
+                return NAN;
+            }
+        };
 
-        try
-        {
-            (*gps_data)["lon"] = std::stof(parse_tag_value("lon"));
-        }
-        catch (...)
-        {
-            (*gps_data)["lon"] = NAN;
-        }
-
+        (*gps_data)["lat"] = parse_tag_value("lat");
+        (*gps_data)["lon"] = parse_tag_value("lon");
         (*gps_data)["date"] = parse_tag_value("date");
         (*gps_data)["time"] = parse_tag_value("time");
-
-        try
-        {
-            (*gps_data)["course"] = std::stof(parse_tag_value("course"));
-        }
-        catch (...)
-        {
-            (*gps_data)["course"] = NAN;
-        }
-
-        try
-        {
-            (*gps_data)["speed"] = std::stof(parse_tag_value("speed"));
-        }
-        catch (...)
-        {
-            (*gps_data)["speed"] = NAN;
-        }
-
-        try
-        {
-            (*gps_data)["pdop"] = std::stof(parse_tag_value("pdop"));
-        }
-        catch (...)
-        {
-            (*gps_data)["pdop"] = NAN;
-        }
-
-        try
-        {
-            (*gps_data)["hdop"] = std::stof(parse_tag_value("hdop"));
-        }
-        catch (...)
-        {
-            (*gps_data)["hdop"] = NAN;
-        }
+        (*gps_data)["course"] = parse_tag_value("course");
+        (*gps_data)["speed"] = parse_tag_value("speed");
+        (*gps_data)["pdop"] = parse_tag_value("pdop");
+        (*gps_data)["hdop"] = parse_tag_value("hdop");
 
         return gps_data;
     }
