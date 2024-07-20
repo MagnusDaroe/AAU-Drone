@@ -13,7 +13,7 @@ class SerialReader : public rclcpp::Node
 {
 public:
     SerialReader()
-    : Node("serial_reader")
+    : Node("GPS_node")
     {
         publisher_ = this->create_publisher<drone::msg::GPSData>("gps_data", 10);
         timer_ = this->create_wall_timer(100ms, std::bind(&SerialReader::timer_callback, this));
@@ -51,14 +51,14 @@ private:
                     if (data)
                     {
                         auto msg = drone::msg::GPSData();
-                        msg.lat = data->at("lat");
-                        msg.lon = data->at("lon");
-                        msg.date = data->at("date");
-                        msg.time = data->at("time");
-                        msg.course = data->at("course");
-                        msg.speed = data->at("speed");
-                        msg.pdop = data->at("pdop");
-                        msg.hdop = data->at("hdop");
+                        msg.lat = string_to_double(data->at("lat"));
+                        msg.lon = string_to_double(data->at("lon"));
+                        msg.date = data->at("date"); // Assuming date is a string
+                        msg.time = data->at("time"); // Assuming time is a string
+                        msg.course = string_to_double(data->at("course"));
+                        msg.speed = string_to_double(data->at("speed"));
+                        msg.pdop = string_to_double(data->at("pdop"));
+                        msg.hdop = string_to_double(data->at("hdop"));
                         publisher_->publish(msg);
                     }
                 }
@@ -85,17 +85,6 @@ private:
             return "";
         };
 
-        auto parse_float_tag_value = [&](const std::string& tag) -> float {
-            try
-            {
-                return std::stof(parse_tag_value(tag));
-            }
-            catch (...)
-            {
-                return NAN;
-            }
-        };
-
         (*gps_data)["lat"] = parse_tag_value("lat");
         (*gps_data)["lon"] = parse_tag_value("lon");
         (*gps_data)["date"] = parse_tag_value("date");
@@ -106,6 +95,18 @@ private:
         (*gps_data)["hdop"] = parse_tag_value("hdop");
 
         return gps_data;
+    }
+
+    double string_to_double(const std::string& str)
+    {
+        try
+        {
+            return std::stod(str);
+        }
+        catch (...)
+        {
+            return NAN;
+        }
     }
 
     rclcpp::Publisher<drone::msg::GPSData>::SharedPtr publisher_;
