@@ -3,13 +3,13 @@
 import rclpy
 from rclpy.node import Node
 import serial
-from GPSData.msg import GpsData  # Import the custom message
+from drone.msg import GPSData
 import math
 
 class SerialReader(Node):
     def __init__(self):
         super().__init__('serial_reader')
-        self.publisher_ = self.create_publisher(GpsData, 'esp32_data', 10)
+        self.publisher_ = self.create_publisher(GPSData, 'esp32_data', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)
         
         self.serial_port = '/dev/ttyUSB0'  # Adjust to your serial port
@@ -28,7 +28,7 @@ class SerialReader(Node):
                 if line.startswith('<gps>') and line.endswith('</gps>'):
                     data = self.parse_gps_data(line)
                     if data:
-                        msg = GpsData()
+                        msg = GPSData()
                         msg.lat = data.get('lat', float('nan'))  # Use NaN for missing latitude
                         msg.lon = data.get('lon', float('nan'))  # Use NaN for missing longitude
                         msg.date = data.get('date', 'N/A')  # Use 'N/A' for missing date
