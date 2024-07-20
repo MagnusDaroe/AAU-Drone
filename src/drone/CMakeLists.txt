@@ -20,6 +20,8 @@
 	find_package(std_msgs REQUIRED)
 	find_package(sensor_msgs REQUIRED)
 
+	find_package(serial REQUIRED)
+
 	find_package(builtin_interfaces REQUIRED)
 	find_package(rosidl_default_generators REQUIRED)
 	if(NOT builtin_interfaces_FOUND)
@@ -40,14 +42,15 @@
 	# Include Cpp "include" directory
 	include_directories(include)
 
-	#find_package(drone REQUIRED)
+	find_package(drone REQUIRED)
 
 	# Create Cpp executables - Controller_node
-	#add_executable(GPS src/GPS.cpp) # change name of node
-	#ament_target_dependencies(GPS rclcpp drone)
+	add_executable(GPS src/GPS.cpp) # change name of node
+	ament_target_dependencies(GPS rclcpp drone serial)
 
 	# Install Cpp executables
 	install(TARGETS
+	GPS
 	#Controller_node
 	DESTINATION lib/${PROJECT_NAME}
 	)
@@ -74,3 +77,5 @@
 	)
 
 	ament_package()
+
+
