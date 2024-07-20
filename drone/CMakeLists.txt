@@ -34,6 +34,7 @@
 	"msg/DroneVideo.msg"
 	"msg/ViconData.msg"
 	"srv/Clock.srv"
+	"msg/GPSData.msg"
 	DEPENDENCIES builtin_interfaces geometry_msgs std_msgs sensor_msgs)
 
 	# Include Cpp "include" directory
