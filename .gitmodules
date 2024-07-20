@@ -1,0 +1,3 @@
+[submodule "drone/src/serial"]
+	path = drone/src/serial
+	url = https://github.com/wjwwood/serial.git
