@@ -40,11 +40,11 @@
 	# Include Cpp "include" directory
 	include_directories(include)
 
-	find_package(drone REQUIRED)
+	#find_package(drone REQUIRED)
 
 	# Create Cpp executables - Controller_node
-	add_executable(GPS src/GPS.cpp) # change name of node
-	ament_target_dependencies(GPS rclcpp drone)
+	#add_executable(GPS src/GPS.cpp) # change name of node
+	#ament_target_dependencies(GPS rclcpp drone)
 
 	# Install Cpp executables
 	install(TARGETS
