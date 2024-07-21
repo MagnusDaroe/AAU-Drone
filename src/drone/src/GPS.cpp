@@ -48,10 +48,10 @@ private:
     {
         async_read_until(serial_, buffer_, '\n',
             boost::bind(&SerialReader::handle_read, this,
-            placeholders::error, placeholders::bytes_transferred));
+            placeholders::error, boost::placeholders::_2));
     }
 
-    void handle_read(const boost::system::error_code& error, size_t bytes_transferred)
+    void handle_read(const boost::system::error_code& error, size_t /*bytes_transferred*/)
     {
         if (!error)
         {
