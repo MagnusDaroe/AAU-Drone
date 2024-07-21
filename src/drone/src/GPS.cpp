@@ -9,19 +9,21 @@
 
 using namespace std::chrono_literals;
 
-serial_port_ = "/dev/ttyUSB0"; 
-baud_rate_ = 115200;
-
 class SerialReader : public rclcpp::Node
 {
 public:
     SerialReader()
     : Node("GPS_node")
     {
-        // Initialize the serial port and the publisher
+
+        serial_port_ = "/dev/ttyUSB0"; 
+        baud_rate_ = 115200;
+
+        RCLCPP_INFO(this->get_logger(), "Starting GPS node. Trying to connect to serial port %s.", serial_port_.c_str());
         publisher_ = this->create_publisher<drone::msg::GPSData>("gps_data", 10);
         timer_ = this->create_wall_timer(100ms, std::bind(&SerialReader::timer_callback, this));
         
+
 
         try {
             serial_.setPort(serial_port_);
@@ -120,7 +122,6 @@ private:
 
 int main(int argc, char *argv[])
 {   
-    RCLCPP_INFO(this->get_logger(), "Starting GPS node. Trying to connect to a USB0");
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<SerialReader>());
     rclcpp::shutdown();
