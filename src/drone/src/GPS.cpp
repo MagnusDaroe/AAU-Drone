@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <serial/serial.h>
-#include <drone/msg/gps_data.hpp>
+#include <drone_interfaces/msg/gps_data.hpp>
 #include <string>
 #include <sstream>
 #include <cmath>
