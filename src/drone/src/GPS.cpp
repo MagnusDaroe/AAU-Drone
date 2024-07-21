@@ -20,7 +20,7 @@ public:
         baud_rate_ = 115200;
 
         RCLCPP_INFO(this->get_logger(), "Starting GPS node. Trying to connect to serial port %s.", serial_port_.c_str());
-        publisher_ = this->create_publisher<drone::msg::GPSData>("gps_data", 10);
+        publisher_ = this->create_publisher<drone_interfaces::msg::GPSData>("gps_data", 10);
         timer_ = this->create_wall_timer(10ms, std::bind(&SerialReader::timer_callback, this));
         
 
@@ -54,7 +54,7 @@ private:
                     auto data = parse_gps_data(line);
                     if (data)
                     {
-                        auto msg = drone::msg::GPSData();
+                        auto msg = drone_interfaces::msg::GPSData();
                         msg.lat = string_to_double(data->at("lat"));
                         msg.lon = string_to_double(data->at("lon"));
                         msg.date = data->at("date"); // Assuming date is a string
@@ -113,7 +113,7 @@ private:
         }
     }
 
-    rclcpp::Publisher<drone::msg::GPSData>::SharedPtr publisher_;
+    rclcpp::Publisher<drone_interfaces::msg::GPSData>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
     serial::Serial serial_;
     std::string serial_port_;
