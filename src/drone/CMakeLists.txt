@@ -10,44 +10,20 @@
 	add_compile_options(-Wall -Wextra -Wpedantic)
 	endif()
 
-	
-	
-	find_package(geometry_msgs REQUIRED)
-	find_package(std_msgs REQUIRED)
-	find_package(sensor_msgs REQUIRED)
-	find_package(rosidl_default_generators REQUIRED)
-	find_package(builtin_interfaces REQUIRED)
-	if(NOT builtin_interfaces_FOUND)
-	message(FATAL_ERROR "Could not find builtin_interfaces package")
-endif()
-
-	# Generate message files
-	rosidl_generate_interfaces(${PROJECT_NAME}
-	"msg/DroneCommand.msg"
-	"msg/DroneControlData.msg"
-	"msg/DroneStatus.msg"
-	"msg/DroneVideo.msg"
-	"msg/ViconData.msg"
-	"srv/Clock.srv"
-	"msg/GPSData.msg"
-	DEPENDENCIES builtin_interfaces geometry_msgs std_msgs sensor_msgs)
-
-
 	# Find dependencies
 	find_package(ament_cmake REQUIRED)
 	find_package(ament_cmake_python REQUIRED)
 	find_package(rclcpp REQUIRED)
 	find_package(rclpy REQUIRED)
 	find_package(serial REQUIRED)
-
-	#find_package(drone REQUIRED)
+	find_package(drone_interfaces REQUIRED)
 
 	# Include Cpp "include" directory
 	include_directories(include)
 
 	# Create Cpp executables - Controller_node
 	add_executable(GPS src/GPS.cpp) # change name of node
-	ament_target_dependencies(GPS rclcpp serial drone)
+	ament_target_dependencies(GPS rclcpp serial drone_interfaces)
 
 	# Install Cpp executables
 	install(TARGETS
