@@ -10,23 +10,16 @@
 	add_compile_options(-Wall -Wextra -Wpedantic)
 	endif()
 
-	# Find dependencies
-	find_package(ament_cmake REQUIRED)
-	find_package(ament_cmake_python REQUIRED)
-	find_package(rclcpp REQUIRED)
-	find_package(rclpy REQUIRED)
-
+	
+	
 	find_package(geometry_msgs REQUIRED)
 	find_package(std_msgs REQUIRED)
 	find_package(sensor_msgs REQUIRED)
-
-	find_package(serial REQUIRED)
-
-	find_package(builtin_interfaces REQUIRED)
 	find_package(rosidl_default_generators REQUIRED)
+	find_package(builtin_interfaces REQUIRED)
 	if(NOT builtin_interfaces_FOUND)
-		message(FATAL_ERROR "Could not find builtin_interfaces package")
-	endif()
+	message(FATAL_ERROR "Could not find builtin_interfaces package")
+endif()
 
 	# Generate message files
 	rosidl_generate_interfaces(${PROJECT_NAME}
@@ -39,19 +32,26 @@
 	"msg/GPSData.msg"
 	DEPENDENCIES builtin_interfaces geometry_msgs std_msgs sensor_msgs)
 
-	# Include Cpp "include" directory
-	include_directories(include)
+
+	# Find dependencies
+	find_package(ament_cmake REQUIRED)
+	find_package(ament_cmake_python REQUIRED)
+	find_package(rclcpp REQUIRED)
+	find_package(rclpy REQUIRED)
+	find_package(serial REQUIRED)
 
 	find_package(drone REQUIRED)
 
+	# Include Cpp "include" directory
+	include_directories(include)
+
 	# Create Cpp executables - Controller_node
 	add_executable(GPS src/GPS.cpp) # change name of node
-	ament_target_dependencies(GPS rclcpp drone serial)
+	ament_target_dependencies(GPS rclcpp serial drone)
 
 	# Install Cpp executables
 	install(TARGETS
 	GPS
-	#Controller_node
 	DESTINATION lib/${PROJECT_NAME}
 	)
 
