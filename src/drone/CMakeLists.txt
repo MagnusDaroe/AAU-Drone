@@ -40,7 +40,7 @@ endif()
 	find_package(rclpy REQUIRED)
 	find_package(serial REQUIRED)
 
-	find_package(drone REQUIRED)
+	#find_package(drone REQUIRED)
 
 	# Include Cpp "include" directory
 	include_directories(include)
