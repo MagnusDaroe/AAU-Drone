@@ -6,85 +6,67 @@
 #include <cmath>
 #include <unordered_map>
 #include <memory>
-#include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 
 using namespace std::chrono_literals;
-using namespace boost::asio;
+
+serial_port_ = "/dev/ttyUSB0"; 
+baud_rate_ = 115200;
 
 class SerialReader : public rclcpp::Node
 {
 public:
     SerialReader()
-    : Node("GPS_node"), io_(), serial_(io_, serial_port_)
+    : Node("GPS_node")
     {
-        // Initialize the publisher
+        // Initialize the serial port and the publisher
         publisher_ = this->create_publisher<drone::msg::GPSData>("gps_data", 10);
-
-        // Open the serial port
-        serial_.set_option(serial_port_base::baud_rate(baud_rate_));
+        timer_ = this->create_wall_timer(100ms, std::bind(&SerialReader::timer_callback, this));
         
+
+        try {
+            serial_.setPort(serial_port_);
+            serial_.setBaudrate(baud_rate_);
+            serial::Timeout timeout = serial::Timeout::simpleTimeout(1000);
+            serial_.setTimeout(timeout);
+            serial_.open();
+        } catch (serial::IOException &e) {
+            RCLCPP_ERROR(this->get_logger(), "Unable to open port %s", serial_port_.c_str());
+        }
+
         RCLCPP_INFO(this->get_logger(), "SerialReader node started, reading from %s at %d baud rate.",
                     serial_port_.c_str(), baud_rate_);
-        
-        // Start an asynchronous read operation
-        start_async_read();
-        
-        // Spin the IO service in a separate thread
-        io_thread_ = std::thread([this]() { io_.run(); });
-    }
-
-    ~SerialReader()
-    {
-        // Stop the IO service and join the thread
-        io_.stop();
-        if (io_thread_.joinable()) {
-            io_thread_.join();
-        }
     }
 
 private:
-    void start_async_read()
+    void timer_callback()
     {
-        async_read_until(serial_, buffer_, '\n',
-            boost::bind(&SerialReader::handle_read, this,
-            placeholders::error, boost::placeholders::_2));
-    }
-
-    void handle_read(const boost::system::error_code& error, size_t /*bytes_transferred*/)
-    {
-        if (!error)
+        if (serial_.available())
         {
-            std::istream is(&buffer_);
-            std::string line;
-            std::getline(is, line);
-            RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
+            try {
+                std::string line = serial_.readline();
+                RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
 
-            // Parse the GPS data from the string
-            if (line.find("<gps>") != std::string::npos && line.find("</gps>") != std::string::npos)
-            {
-                auto data = parse_gps_data(line);
-                if (data)
+                // Parse the GPS data from the string
+                if (line.find("<gps>") != std::string::npos && line.find("</gps>") != std::string::npos)
                 {
-                    auto msg = drone::msg::GPSData();
-                    msg.lat = string_to_double(data->at("lat"));
-                    msg.lon = string_to_double(data->at("lon"));
-                    msg.date = data->at("date"); // Assuming date is a string
-                    msg.time = data->at("time"); // Assuming time is a string
-                    msg.course = string_to_double(data->at("course"));
-                    msg.speed = string_to_double(data->at("speed"));
-                    msg.pdop = string_to_double(data->at("pdop"));
-                    msg.hdop = string_to_double(data->at("hdop"));
-                    publisher_->publish(msg);
+                    auto data = parse_gps_data(line);
+                    if (data)
+                    {
+                        auto msg = drone::msg::GPSData();
+                        msg.lat = string_to_double(data->at("lat"));
+                        msg.lon = string_to_double(data->at("lon"));
+                        msg.date = data->at("date"); // Assuming date is a string
+                        msg.time = data->at("time"); // Assuming time is a string
+                        msg.course = string_to_double(data->at("course"));
+                        msg.speed = string_to_double(data->at("speed"));
+                        msg.pdop = string_to_double(data->at("pdop"));
+                        msg.hdop = string_to_double(data->at("hdop"));
+                        publisher_->publish(msg);
+                    }
                 }
+            } catch (serial::IOException &e) {
+                RCLCPP_ERROR(this->get_logger(), "Error reading from serial port: %s", e.what());
             }
-
-            // Start another asynchronous read operation
-            start_async_read();
-        }
-        else
-        {
-            RCLCPP_ERROR(this->get_logger(), "Error reading from serial port: %s", error.message().c_str());
         }
     }
 
@@ -130,19 +112,17 @@ private:
     }
 
     rclcpp::Publisher<drone::msg::GPSData>::SharedPtr publisher_;
-    boost::asio::io_service io_;
-    boost::asio::serial_port serial_;
-    boost::asio::streambuf buffer_;
-    std::thread io_thread_;
-    std::string serial_port_ = "/dev/ttyUSB0";
-    uint32_t baud_rate_ = 115200;
+    rclcpp::TimerBase::SharedPtr timer_;
+    serial::Serial serial_;
+    std::string serial_port_;
+    uint32_t baud_rate_;
 };
 
 int main(int argc, char *argv[])
-{
+{   
+    RCLCPP_INFO(this->get_logger(), "Starting GPS node. Trying to connect to a USB0");
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<SerialReader>();
-    rclcpp::spin(node);
+    rclcpp::spin(std::make_shared<SerialReader>());
     rclcpp::shutdown();
     return 0;
 }
