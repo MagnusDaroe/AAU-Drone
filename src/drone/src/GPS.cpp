@@ -21,7 +21,7 @@ public:
 
         RCLCPP_INFO(this->get_logger(), "Starting GPS node. Trying to connect to serial port %s.", serial_port_.c_str());
         publisher_ = this->create_publisher<drone::msg::GPSData>("gps_data", 10);
-        timer_ = this->create_wall_timer(100ms, std::bind(&SerialReader::timer_callback, this));
+        timer_ = this->create_wall_timer(10ms, std::bind(&SerialReader::timer_callback, this));
         
 
 
