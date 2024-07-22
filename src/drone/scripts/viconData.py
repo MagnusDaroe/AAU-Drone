@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from drone.msg import ViconData
+from drone_interfaces.msg import ViconData
 import time
 import socket
 
