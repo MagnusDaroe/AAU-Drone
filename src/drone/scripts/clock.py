@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 import time
-from drone.srv import Clock
+from drone_interfaces.srv import Clock
 
 class Clock_server(Node):
     """Clock server node"""

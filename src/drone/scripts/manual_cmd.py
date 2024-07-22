@@ -5,7 +5,7 @@ from rclpy.node import Node
 import threading
 import pygame
 import numpy as np
-from drone.msg import DroneCommand
+from drone_interfaces.msg import DroneCommand
 import time
 
 # Mode dictionary
