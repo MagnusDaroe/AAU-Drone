@@ -43,6 +43,7 @@
 	scripts/viconData.py
 	scripts/GPS.py
 	scripts/emulateViconData.py
+	scripts/Parse.py
 	DESTINATION lib/${PROJECT_NAME} # change name of node in python
 	)
 
