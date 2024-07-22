@@ -219,9 +219,9 @@ class FC_Commander(Node):
 
         # Get the IMU data
         msg.timestamp = self.get_time()
-        msg.roll = self.roll
-        msg.pitch = self.pitch
-        msg.yaw = self.yaw
+        msg.roll = float(self.roll)
+        msg.pitch = float(self.pitch)
+        msg.yaw = float(self.yaw)
 
         # Publish the message
         self.publisher_imu.publish(msg)
