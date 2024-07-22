@@ -6,7 +6,7 @@ from pymavlink import mavutil
 import time
 import threading
 import math
-from drone_interfaces.msg import DroneCommand, DroneStatus, DroneIMU
+from drone_interfaces.msg import DroneCommand, DroneStatus, DroneImu
 from drone_interfaces.srv import Clock
 import numpy as np
 
