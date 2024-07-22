@@ -6,8 +6,8 @@ from pymavlink import mavutil
 import time
 import threading
 import math
-from drone.msg import DroneCommand, DroneStatus
-from drone.srv import Clock
+from drone_interfaces.msg import DroneCommand, DroneStatus
+from drone_interfaces.srv import Clock
 import numpy as np
 
 class RateController:
