@@ -226,30 +226,30 @@ class FC_Commander(Node):
         # Publish the message
         self.publisher_imu.publish(msg)
 
-        def check_battery(self):
-            """
-            Check the battery level of the drone
-            """
-            self.get_logger().info("Checking battery voltage")
+    def check_battery(self):
+        """
+        Check the battery level of the drone
+        """
+        self.get_logger().info("Checking battery voltage")
 
-            # Request the battery voltage
-            self.the_connection.mav.request_data_stream_send(
-                self.the_connection.target_system,
-                self.the_connection.target_component,
-                mavutil.mavlink.MAV_DATA_STREAM_EXTENDED_STATUS,
-                1,
-                1
-            )
-            # Wait for the battery voltage
-            msg = self.the_connection.recv_match(type='SYS_STATUS', blocking=True)
-            
-            # Get the battery voltage in volts
-            self.battery_voltage = msg.voltage_battery / 1000.0
-            
-            # Check if the battery voltage is within the operating range
-            self.battery_check_timestamp = self.get_time()
-            self.battery_ok = True if self.battery_voltage > self.BATTERY_MIN_OP_VOLTAGE else False 
-            self.get_logger().info(f"Battery voltage: {self.battery_voltage}, Battery ok: {self.battery_ok}")
+        # Request the battery voltage
+        self.the_connection.mav.request_data_stream_send(
+            self.the_connection.target_system,
+            self.the_connection.target_component,
+            mavutil.mavlink.MAV_DATA_STREAM_EXTENDED_STATUS,
+            1,
+            1
+        )
+        # Wait for the battery voltage
+        msg = self.the_connection.recv_match(type='SYS_STATUS', blocking=True)
+        
+        # Get the battery voltage in volts
+        self.battery_voltage = msg.voltage_battery / 1000.0
+        
+        # Check if the battery voltage is within the operating range
+        self.battery_check_timestamp = self.get_time()
+        self.battery_ok = True if self.battery_voltage > self.BATTERY_MIN_OP_VOLTAGE else False 
+        self.get_logger().info(f"Battery voltage: {self.battery_voltage}, Battery ok: {self.battery_ok}")
 
 
     def setup_test_parameters(self):
