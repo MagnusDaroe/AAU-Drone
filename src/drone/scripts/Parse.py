@@ -12,7 +12,7 @@ class MavlinkReaderNode(Node):
         super().__init__('mavlink_reader_node')
         self.publisher_ = self.create_publisher(String, 'mavlink_messages', 10)
         self.serial_port = '/dev/ttyTHS1'
-        self.baud_rate = 115200
+        self.baud_rate = 57600
 
         self.timer = self.create_timer(0.1, self.timer_callback)
 
