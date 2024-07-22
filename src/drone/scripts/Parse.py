@@ -13,9 +13,12 @@ class MavlinkReaderNode(Node):
         self.publisher_ = self.create_publisher(String, 'mavlink_messages', 10)
         self.serial_port = '/dev/ttyTHS1'
         self.baud_rate = 115200
+
+
         self.timer = self.create_timer(0.1, self.timer_callback)
-        self.ser = serial.Serial(self.serial_port, self.baud_rate)
-        self.mavlink_connection = mavutil.mavlink_connection(self.ser)
+
+        self.the_connection = mavutil.mavlink_connection(self.USB_PORT,baud=self.BAUDRATE)
+        self.the_connection.wait_heartbeat()
         self.get_logger().info(f"Connected to {self.serial_port} at {self.baud_rate} baud")
 
     def timer_callback(self):

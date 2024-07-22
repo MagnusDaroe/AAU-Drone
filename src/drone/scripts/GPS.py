@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 import serial
-from drone.msg import GPSData
+from drone_interfaces.msg import GPSData
 import math
 
 class SerialReader(Node):
