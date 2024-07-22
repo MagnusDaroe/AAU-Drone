@@ -160,8 +160,7 @@ class FC_Commander(Node):
         
             # Assign the rest of the commands
             self.fc_command.timestamp = msg.timestamp
-            
-            
+                  
     def status_publisher(self):
         """
         Publish the system status\n
@@ -198,6 +197,7 @@ class FC_Commander(Node):
         msg: DroneIMU message - {xxx}
         """
 
+        self.get_logger().info("Requesting IMU data")
         
         # Request the imu data
         self.the_connection.mav.request_data_stream_send(
@@ -210,6 +210,9 @@ class FC_Commander(Node):
 
         # Wait for the battery voltage
         msg = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
+
+        # Receive the IMU data
+        self.get_logger().info(f"Received IMU data: Roll={msg.roll}, Pitch={msg.pitch}, Yaw={msg.yaw}")
 
         # Publish the data. create a DroneStatus msg object
         msg = DroneIMU()
