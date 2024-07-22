@@ -6,7 +6,7 @@ from pymavlink import mavutil
 import time
 import threading
 import math
-from drone_interfaces.msg import DroneCommand, DroneStatus
+from drone_interfaces.msg import DroneCommand, DroneStatus, DroneIMU
 from drone_interfaces.srv import Clock
 import numpy as np
 
@@ -61,6 +61,12 @@ class FC_Commander(Node):
         # Connection variables
         self.battery_check_requested = False
         
+        # IMU variables
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
+
+
         # Auto variables
         self.auto_disarm = False
         self.auto_arm_failed = False
@@ -90,13 +96,21 @@ class FC_Commander(Node):
             10
         )
 
-        # Define publisher
+        # Define publishers
         self.publisher_status= self.create_publisher(
             DroneStatus,
             '/status_fc',
             10
         )
-        self.publish_timer = self.create_timer(5, self.status_publisher)
+
+        self.publisher_imu = self.create_publisher(
+            DroneIMU,
+            '/imu_fc',
+            10
+        )
+        
+        self.publish_timer_status = self.create_timer(5, self.status_publisher)
+
 
         #Calibrate the clock
         self.calibrate_clock(persistence=False)
@@ -177,6 +191,37 @@ class FC_Commander(Node):
         
         # Publish the message
         self.publisher_status.publish(msg)
+    
+    def Publish_IMU_data(self):
+        """
+        Publish the IMU data\n
+        msg: DroneIMU message - {xxx}
+        """
+
+        
+        # Request the imu data
+        self.the_connection.mav.request_data_stream_send(
+            self.the_connection.target_system,
+            self.the_connection.target_component,
+            mavutil.mavlink.MAV_DATA_STREAM_EXTRA1,
+            1,
+            1
+        )
+
+        # Wait for the battery voltage
+        msg = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
+
+        # Publish the data. create a DroneStatus msg object
+        msg = DroneIMU()
+
+        # Get the IMU data
+        msg.timestamp = self.get_time()
+        msg.roll = self.roll
+        msg.pitch = self.pitch
+        msg.yaw = self.yaw
+
+        # Publish the message
+        self.publisher_imu.publish(msg)
 
     def setup_test_parameters(self):
         # Define the test mode
@@ -184,35 +229,7 @@ class FC_Commander(Node):
 
         # Check battery voltage
         self.do_battery_check = True
-        
-        "Test parameters - Currently the rest of the code is not used"
-        
-        # Define a dictionary mapping test types to attributes
-        test_attributes = {
-            'pitch': ('test_pitch', 'test_pitch_value'),
-            'roll': ('test_roll', 'test_roll_value'),
-            'yaw': ('test_yaw', 'test_yaw_value'),
-            'thrust': ('test_thrust', 'test_thrust_value')
-        }
-
-        # Node parameters
-        self.test_type = self.get_parameter('test_type').value if self.has_parameter('test_type') else None
-
-        # Initialize all test flags to False
-        self.test_pitch = False
-        self.test_roll = False
-        self.test_yaw = False
-        self.test_thrust = False
-
-        # Set the test values based on test type
-        if self.test_type in test_attributes:
-            test_flag, value_param = test_attributes[self.test_type]
-            setattr(self, test_flag, True)
-            setattr(self, value_param, self.get_parameter(value_param).value if self.has_parameter(value_param) else 'nan')
-
-        # Make the test attributes available to the class
-        self.test_attributes = test_attributes
-     
+       
     def calibrate_clock(self, persistence=False):
         """
         Calibrate the clock to synchronize the time between the GCS and the computer
@@ -355,7 +372,6 @@ class FC_Commander(Node):
                 self.drone_reboot()
                 self.auto_arm_failed = True
 
-
     def drone_disarm_auto(self):
         """
         Disarm the drone. Disarm the drone automatically
@@ -487,8 +503,11 @@ class FC_Commander(Node):
                     if not self.test_mode:
                         self.drone_arm()
 
-               
-                        
+
+            # Get the IMU data
+            self.Publish_IMU_data()
+
+            # Sleep to keep the update rate  
             rate_controller.sleep()
     
     def flight_mode(self):

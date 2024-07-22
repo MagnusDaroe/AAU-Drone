@@ -27,16 +27,13 @@ class MavlinkReaderNode(Node):
     def timer_callback(self):
         try:
             msg = self.the_connection.recv_match(blocking=True)
-            raw_message = self.the_connection.mav.serial.read(self.the_connection.mav.bytes_available())
             if msg:
                 mavlink_msg = String()
                 mavlink_msg.data = str(msg)
                 self.publisher_.publish(mavlink_msg)
                 self.get_logger().info(f"Published MAVLink message: {mavlink_msg.data}")
-                self.get_logger().info(f"Raw MAVLink data: {raw_message.hex()}")
         except Exception as e:
             self.get_logger().error(f"Failed to receive or publish MAVLink message: {e}")
-
 
 def main(args=None):
     rclpy.init(args=args)
