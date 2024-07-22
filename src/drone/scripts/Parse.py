@@ -17,7 +17,7 @@ class MavlinkReaderNode(Node):
 
         self.timer = self.create_timer(0.1, self.timer_callback)
 
-        self.the_connection = mavutil.mavlink_connection(self.USB_PORT,baud=self.BAUDRATE)
+        self.the_connection = mavutil.mavlink_connection(self.serial_port,baud=self.baud_rate)
         self.the_connection.wait_heartbeat()
         self.get_logger().info(f"Connected to {self.serial_port} at {self.baud_rate} baud")
 
