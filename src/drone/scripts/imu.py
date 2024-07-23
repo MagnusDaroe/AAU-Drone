@@ -40,8 +40,7 @@ class FC_Commander(Node):
         msg: DroneIMU message - {xxx}
         """
         while rclpy.ok():
-            self.get_IMU_data()
-           
+            
             request_time = time.time()
             self.get_logger().info("Requesting IMU data")
             
