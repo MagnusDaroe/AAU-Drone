@@ -251,7 +251,6 @@ class FC_Commander(Node):
         self.battery_ok = True if self.battery_voltage > self.BATTERY_MIN_OP_VOLTAGE else False 
         self.get_logger().info(f"Battery voltage: {self.battery_voltage}, Battery ok: {self.battery_ok}")
 
-
     def setup_test_parameters(self):
         # Define the test mode
         self.test_mode = False
@@ -470,7 +469,7 @@ class FC_Commander(Node):
         Controls the mode of the drone
         """
         # Initialize your rate controller
-        rate_controller = RateController(updaterate)
+        ##rate_controller = RateController(updaterate)
 
         # Main loop. Rclpy.ok() returns False when the node is shutdown
         while rclpy.ok():
@@ -537,7 +536,7 @@ class FC_Commander(Node):
             self.Publish_IMU_data()
 
             # Sleep to keep the update rate  
-            rate_controller.sleep()
+            #rate_controller.sleep()
     
     def flight_mode(self):
         """
