@@ -40,7 +40,7 @@ class FC_Commander(Node):
         msg: DroneIMU message - {xxx}
         """
 
-        request_time = self.get_time()
+        request_time = time.Time()
         self.get_logger().info("Requesting IMU data")
         
         # Request the imu data
@@ -55,7 +55,7 @@ class FC_Commander(Node):
         # Wait for the battery voltage
         drone = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
 
-        self.get_logger().info(f"Took {self.get_time() - request_time} seconds to receive the IMU data")
+        self.get_logger().info(f"Took {time.Time() - request_time} seconds to receive the IMU data")
 
         # Receive the IMU data
         self.get_logger().info(f"Received IMU data: Roll={drone.roll}, Pitch={drone.pitch}, Yaw={drone.yaw}")
