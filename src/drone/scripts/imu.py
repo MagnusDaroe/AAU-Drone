@@ -64,7 +64,7 @@ class FC_Commander(Node):
         msg = DroneIMU()
 
         # Get the IMU data
-        msg.timestamp = self.get_time()
+        msg.timestamp = time.time()
         msg.roll = float(drone.roll)
         msg.pitch = float(drone.pitch)
         msg.yaw = float(drone.yaw)
