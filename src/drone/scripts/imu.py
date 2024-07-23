@@ -54,7 +54,7 @@ class FC_Commander(Node):
             )
 
             # Wait for the battery voltage
-            drone = self.the_connection.recv_match(type='RAW_IMU', blocking=True)
+            drone = self.the_connection.recv_match(type='SCALED_IMU', blocking=True)
 
             self.get_logger().info(f"Took {time.time() - request_time} seconds to receive the IMU data")
 
