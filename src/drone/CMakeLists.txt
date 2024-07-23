@@ -44,6 +44,7 @@
 	scripts/GPS.py
 	scripts/emulateViconData.py
 	scripts/Parse.py
+	scripts/imu.py
 	DESTINATION lib/${PROJECT_NAME} # change name of node in python
 	)
 
