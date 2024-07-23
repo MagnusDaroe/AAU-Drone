@@ -39,38 +39,40 @@ class FC_Commander(Node):
         Publish the IMU data\n
         msg: DroneIMU message - {xxx}
         """
+        while rclpy.ok():
+            self.get_IMU_data()
+           
+            request_time = time.time()
+            self.get_logger().info("Requesting IMU data")
+            
+            # Request the imu data
+            self.the_connection.mav.request_data_stream_send(
+                self.the_connection.target_system,
+                self.the_connection.target_component,
+                mavutil.mavlink.MAV_DATA_STREAM_EXTRA1,
+                1,
+                1
+            )
 
-        request_time = time.time()
-        self.get_logger().info("Requesting IMU data")
-        
-        # Request the imu data
-        self.the_connection.mav.request_data_stream_send(
-            self.the_connection.target_system,
-            self.the_connection.target_component,
-            mavutil.mavlink.MAV_DATA_STREAM_EXTRA1,
-            1,
-            1
-        )
+            # Wait for the battery voltage
+            drone = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
 
-        # Wait for the battery voltage
-        drone = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
+            self.get_logger().info(f"Took {time.time() - request_time} seconds to receive the IMU data")
 
-        self.get_logger().info(f"Took {time.time() - request_time} seconds to receive the IMU data")
+            # Receive the IMU data
+            self.get_logger().info(f"Received IMU data: Roll={drone.roll}, Pitch={drone.pitch}, Yaw={drone.yaw}")
 
-        # Receive the IMU data
-        self.get_logger().info(f"Received IMU data: Roll={drone.roll}, Pitch={drone.pitch}, Yaw={drone.yaw}")
+            # Publish the data. create a DroneStatus msg object
+            msg = DroneIMU()
 
-        # Publish the data. create a DroneStatus msg object
-        msg = DroneIMU()
+            # Get the IMU data
+            msg.timestamp = time.time()
+            msg.roll = float(drone.roll)
+            msg.pitch = float(drone.pitch)
+            msg.yaw = float(drone.yaw)
 
-        # Get the IMU data
-        msg.timestamp = time.time()
-        msg.roll = float(drone.roll)
-        msg.pitch = float(drone.pitch)
-        msg.yaw = float(drone.yaw)
-
-        # Publish the message
-        self.publisher_imu.publish(msg)
+            # Publish the message
+            self.publisher_imu.publish(msg)
 
 
     # Drone functions
