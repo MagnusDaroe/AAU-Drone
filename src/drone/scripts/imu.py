@@ -54,12 +54,12 @@ class FC_Commander(Node):
             )
 
             # Wait for the battery voltage
-            drone = self.the_connection.recv_match(type='ATTITUDE_QUATERNION', blocking=True)
+            drone = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
 
             self.get_logger().info(f"Took {time.time() - request_time} seconds to receive the IMU data")
 
             # Receive the IMU data
-            self.get_logger().info(f"Received IMU data: Roll={drone.q1}, Pitch={drone.q2}, Yaw={drone.q3}")
+            self.get_logger().info(f"Received IMU data: Roll={drone.roll}, Pitch={drone.pitch}, Yaw={drone.yaw}")
 
             # Publish the data. create a DroneStatus msg object
             msg = DroneIMU()
