@@ -16,10 +16,13 @@ class StatePublisher(Node):
         
         self.x=2.4
         self.y=2.00
+        self.z=0.0
+        self.q=Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
         self.th0=0.0
-        self.hz=10
+        self.hz=50
         self.linear_x=0
         self.angular_z=0
+        
 
         super().__init__('statepublisher')
 
@@ -27,11 +30,7 @@ class StatePublisher(Node):
         self.joint_pub = self.create_publisher(JointState, '/joint_states', qos_profile)
         self.publish_transforms = self.create_publisher(TransformStamped,'/transformed_stamped', qos_profile)
         self.broadcaster = TransformBroadcaster(self, qos=qos_profile)
-        self.publish_state= self.create_publisher(PoseStamped,'/pose', qos_profile)
-        self.subscription = self.create_subscription(Twist, '/cmd_vel',self.integrator,10)
-        self.subscription  # prevent unused variable warning
-        
-
+        self.get_state = self.create_subscription(PoseStamped, '/pose',self.get_state,10)
         
         #self.nodeName = self.get_name()
         #self.get_logger().info("{0} started".format(self.nodeName))
@@ -54,33 +53,27 @@ class StatePublisher(Node):
         self.angular_z=msg.angular.z
 
     def publisher_loop(self):
-        self.x=self.x+(cos(self.th0)*self.linear_x+0.05*sin((pi/15)*time.time()  ))*1/(self.hz)
-        self.y=self.y+(sin(self.th0)*self.linear_x+0.05*cos((pi/15)*time.time()  ))*1/(self.hz)
-        self.th0=self.th0+self.angular_z*1/(self.hz)
+        
         now = self.get_clock().now()
 
         # (moving in a circle with radius=2)
         self.odom_trans.header.stamp = now.to_msg()
         self.odom_trans.transform.translation.x = self.x
         self.odom_trans.transform.translation.y = self.y
-        self.odom_trans.transform.translation.z = 0.0
-        self.odom_trans.transform.rotation = \
-            euler_to_quaternion(0, 0, self.th0) # roll,pitch,yaw
-        pose = PoseStamped()
-        pose.header.stamp = now.to_msg()
-        pose.header.frame_id = 'map'
-        pose.pose.position.x = self.x
-        pose.pose.position.y = self.y
-        pose.pose.position.z = 0.0
-        pose.pose.orientation = euler_to_quaternion(0, 0, self.th0)
-        
-        self.publish_state.publish(pose)
+        self.odom_trans.transform.translation.z = self.z
+        self.odom_trans.transform.rotation = self.q
+ 
         
     
         self.publish_transforms.publish(self.odom_trans)
         self.broadcaster.sendTransform(self.odom_trans)
         
- 
+    def get_state(self,msg):
+        self.x=msg.pose.position.x
+        self.y=msg.pose.position.y
+        self.z= msg.pose.position.z
+        self.q=msg.pose.orientation
+        
 
 def euler_to_quaternion(roll, pitch, yaw):
     qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - cos(roll/2) * sin(pitch/2) * sin(yaw/2)
