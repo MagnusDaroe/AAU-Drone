@@ -51,8 +51,8 @@ class MinimalPublisher(Node):
         
     # Limit velocities to max velocity of 1 m/s
         max_vel = 5.0
-        self.x_dot = np.clip(self.x_dot, -max_vel, max_vel)
-        self.y_dot = np.clip(self.y_dot, -max_vel, max_vel)
+        #self.x_dot = np.clip(self.x_dot, -max_vel, max_vel)
+        #self.y_dot = np.clip(self.y_dot, -max_vel, max_vel)
         self.z_dot = np.clip(self.z_dot, -max_vel, max_vel)
 
         # Update positions based on velocities

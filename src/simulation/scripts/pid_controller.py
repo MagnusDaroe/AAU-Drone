@@ -90,8 +90,8 @@ class MinimalPublisher(Node):
 
     def timer_callback(self):
         if self.data==1:
-            x_goal= 0.
-            y_goal= 0.0
+            x_goal= -10.0
+            y_goal= -10.0
             z_goal = 10.
             yaw_goal = 0.
 
