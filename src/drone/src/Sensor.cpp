@@ -95,7 +95,7 @@ private:
                     if (line.find("<" + tag.first + ">") != std::string::npos && line.find("</" + tag.first + ">") != std::string::npos)
                     {
                         // Found the tag, parse the data
-                        RCLCCP_INFO(this->get_logger(), "Parsing %s data", tag.first.c_str());
+                        RCLCPP_INFO(this->get_logger(), "Parsing %s data", tag.first.c_str());
 
                         auto data = (this->*tag.second)(line);
                         if (data)
