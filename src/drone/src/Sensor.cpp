@@ -91,12 +91,13 @@ private:
                 bool new_data = false;
 
                 for (const auto& tag : sensor_tag_map) {
+                    //Checking tag:
+                    RCLCPP_INFO(this->get_logger(), "Checking tag: %s", tag.first.c_str());
+
                     // Check if the line contains the tag
                     if (line.find("<" + tag.first + ">") != std::string::npos && line.find("</" + tag.first + ">") != std::string::npos)
                     {
-                        // Found the tag, parse the data
-                        RCLCPP_INFO(this->get_logger(), "Parsing %s data", tag.first.c_str());
-
+                        
                         auto data = (this->*tag.second)(line);
                         if (data)
                         {
