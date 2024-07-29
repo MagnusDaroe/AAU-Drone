@@ -81,7 +81,7 @@ private:
     // Function to read sensor data from the serial port
     void read_sensor()
     {
-        string TheTag;
+        String TheTag;
 
         if (serial_.available())
         {
