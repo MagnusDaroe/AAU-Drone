@@ -85,7 +85,7 @@ private:
         {
             try {
                 std::string line = serial_.readline();
-                //RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
+                RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
 
                 auto msg = drone_interfaces::msg::SensorData();
                 bool new_data = false;
