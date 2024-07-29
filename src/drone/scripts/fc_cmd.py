@@ -103,12 +103,6 @@ class FC_Commander(Node):
             10
         )
 
-        self.publisher_imu = self.create_publisher(
-            DroneIMU,
-            '/imu_fc',
-            10
-        )
-        
         self.publish_timer_status = self.create_timer(5, self.status_publisher)
 
 
@@ -191,44 +185,6 @@ class FC_Commander(Node):
         # Publish the message
         self.publisher_status.publish(msg)
     
-    def Publish_IMU_data(self):
-        """
-        Publish the IMU data\n
-        msg: DroneIMU message - {xxx}
-        """
-
-        request_time = self.get_time()
-        self.get_logger().info("Requesting IMU data")
-        
-        # Request the imu data
-        self.the_connection.mav.request_data_stream_send(
-            self.the_connection.target_system,
-            self.the_connection.target_component,
-            mavutil.mavlink.MAV_DATA_STREAM_EXTRA1,
-            1,
-            1
-        )
-
-        # Wait for the battery voltage
-        drone = self.the_connection.recv_match(type='ATTITUDE', blocking=True)
-
-        self.get_logger().info(f"Took {self.get_time() - request_time} seconds to receive the IMU data")
-
-        # Receive the IMU data
-        self.get_logger().info(f"Received IMU data: Roll={drone.roll}, Pitch={drone.pitch}, Yaw={drone.yaw}")
-
-        # Publish the data. create a DroneStatus msg object
-        msg = DroneIMU()
-
-        # Get the IMU data
-        msg.timestamp = self.get_time()
-        msg.roll = float(drone.roll)
-        msg.pitch = float(drone.pitch)
-        msg.yaw = float(drone.yaw)
-
-        # Publish the message
-        self.publisher_imu.publish(msg)
-
     def check_battery(self):
         """
         Check the battery level of the drone
@@ -535,11 +491,9 @@ class FC_Commander(Node):
                         self.drone_arm()
 
 
-            # Get the IMU data
-            self.Publish_IMU_data()
 
             # Sleep to keep the update rate  
-            #rate_controller.sleep()
+            rate_controller.sleep()
     
     def flight_mode(self):
         """
