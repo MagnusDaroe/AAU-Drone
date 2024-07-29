@@ -20,6 +20,7 @@ public:
         serial_port_ = "/dev/ttyUSB0"; 
         baud_rate_ = 115200;
 
+        // Initializing sensor_tag_map with pointers to member functions
         sensor_tag_map = {
             {"ahrs", &SerialReader::parse_ahrs_data},
             {"gps", &SerialReader::parse_gps_data}
@@ -44,10 +45,12 @@ public:
     }
 
 private:
+    // Maps to associate sensor data tags with member variable pointers
     std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map;
     std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map;
     std::unordered_map<std::string, std::shared_ptr<std::unordered_map<std::string, std::string>>(SerialReader::*)(const std::string&)> sensor_tag_map;
 
+    // Static member function to initialize AHRS tag map
     static std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> initialize_ahrs_tag_map() {
         std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> map;
         map["acc_x"] = &drone_interfaces::msg::SensorData::acc_x;
@@ -63,6 +66,7 @@ private:
         return map;
     }
 
+    // Static member function to initialize GPS tag map
     static std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> initialize_gps_tag_map() {
         std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> map;
         map["lat"] = &drone_interfaces::msg::SensorData::lat;
@@ -74,6 +78,7 @@ private:
         return map;
     }
 
+    // Function to read sensor data from the serial port
     void read_sensor()
     {
         if (serial_.available())
@@ -119,6 +124,7 @@ private:
         }
     }
 
+    // Function to parse sensor data using the provided tag map
     std::shared_ptr<std::unordered_map<std::string, std::string>> parse_sensor_data(
         const std::string& data, 
         const std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>& tag_map)
@@ -145,16 +151,19 @@ private:
         return sensor_data;
     }
 
+    // Function to parse GPS data
     std::shared_ptr<std::unordered_map<std::string, std::string>> parse_gps_data(const std::string& data)
     {
         return parse_sensor_data(data, gps_tag_map);
     }
 
+    // Function to parse AHRS data
     std::shared_ptr<std::unordered_map<std::string, std::string>> parse_ahrs_data(const std::string& data)
     {
         return parse_sensor_data(data, ahrs_tag_map);
     }
 
+    // Function to convert string to double
     double string_to_double(const std::string& str)
     {
         try
