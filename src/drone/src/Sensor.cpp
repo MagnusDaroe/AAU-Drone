@@ -99,7 +99,7 @@ private:
                         auto data = (this->*tag.second)(line);
                         if (data)
                         {
-                            RCLCPP_INFO(this->get_logger(), "Read from serial: %s", data.c_str());
+                            RCLCPP_INFO(this->get_logger(), "Read from serial: %s", data);
                             
                             // Iterate through each tag and set the corresponding member in the msg object
                             for (const auto& tag : ahrs_tag_map) {
