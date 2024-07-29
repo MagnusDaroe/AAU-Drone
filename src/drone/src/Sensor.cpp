@@ -22,8 +22,8 @@ public:
 
         // Initializing sensor_tag_map with pointers to member functions
         sensor_tag_map = {
-            {"ahrs", &SerialReader::parse_ahrs_data},
-            {"gps", &SerialReader::parse_gps_data}
+            {"AHRS", &SerialReader::parse_ahrs_data},
+            {"GPS", &SerialReader::parse_gps_data}
         };
 
         RCLCPP_INFO(this->get_logger(), "Starting Sensor node. Trying to connect to serial port %s.", serial_port_.c_str());
