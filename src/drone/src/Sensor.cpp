@@ -20,11 +20,11 @@ public:
 
         // Initialize the tag_maps for GPS and AHRS data
         sensor_tag_map = {
-            {"ahrs", &SerialReader::parse_data<decltype(ahrs_tag_map)>},
-            {"gps", &SerialReader::parse_data<decltype(gps_tag_map)>}
+            {"ahrs", &SerialReader::parse_ahrs_data},
+            {"gps", &SerialReader::parse_gps_data}
         };
 
-        ahrs_tag_map = {
+        ahrs_tag_map = std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>{
             {"acc_x", &drone_interfaces::msg::SensorData::acc_x},
             {"acc_y", &drone_interfaces::msg::SensorData::acc_y},
             {"acc_z", &drone_interfaces::msg::SensorData::acc_z},
@@ -37,7 +37,7 @@ public:
             {"altitude", &drone_interfaces::msg::SensorData::altitude}
         };
 
-        gps_tag_map = {
+        gps_tag_map = std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>{
             {"lat", &drone_interfaces::msg::SensorData::lat},
             {"lon", &drone_interfaces::msg::SensorData::lon},
             {"time", &drone_interfaces::msg::SensorData::time},
@@ -65,30 +65,8 @@ public:
     }
 
 private:
-    template<typename TagMap>
-    std::shared_ptr<std::unordered_map<std::string, std::string>> parse_data(const std::string& data, const TagMap& tag_map)
-    {
-        auto parsed_data = std::make_shared<std::unordered_map<std::string, std::string>>();
-
-        auto parse_tag_value = [&data](const std::string& tag) -> std::string {
-            std::string start_tag = "<" + tag + ">";
-            std::string end_tag = "</" + tag + ">";
-            size_t start_pos = data.find(start_tag);
-            size_t end_pos = data.find(end_tag);
-            if (start_pos != std::string::npos && end_pos != std::string::npos)
-            {
-                start_pos += start_tag.length();
-                return data.substr(start_pos, end_pos - start_pos);
-            }
-            return "";
-        };
-
-        for (const auto& tag : tag_map) {
-            (*parsed_data)[tag.first] = parse_tag_value(tag.first);
-        }
-
-        return parsed_data;
-    }
+    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map;
+    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map;
 
     void read_sensor()
     {
@@ -96,7 +74,8 @@ private:
         {
             try {
                 std::string line = serial_.readline();
-    
+                //RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
+
                 auto msg = drone_interfaces::msg::SensorData();
                 bool new_data = false;
 
@@ -104,11 +83,11 @@ private:
                     // Check if the line contains the tag
                     if (line.find("<" + tag.first + ">") != std::string::npos && line.find("</" + tag.first + ">") != std::string::npos)
                     {
-                        auto data = (this->*tag.second)(line, tag.first == "ahrs" ? ahrs_tag_map : gps_tag_map);
+                        auto data = (this->*tag.second)(line);
                         if (data)
                         {
                             // Iterate through each tag and set the corresponding member in the msg object
-                            for (const auto& tag : (tag.first == "ahrs" ? ahrs_tag_map : gps_tag_map)) {
+                            for (const auto& tag : ahrs_tag_map) {
                                 if (data->count(tag.first)) {
                                     msg.*(tag.second) = string_to_double(data->at(tag.first));
                                 } else {
@@ -128,14 +107,46 @@ private:
                 {
                     sensor_publisher_->publish(msg);
                 }
-                else {
-                    // Data was not parseable, which could be an error or just informative text:
-                    RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
-                }
             } catch (serial::IOException &e) {
                 RCLCPP_ERROR(this->get_logger(), "Error reading from serial port: %s", e.what());
             }
         }
+    }
+
+    std::shared_ptr<std::unordered_map<std::string, std::string>> parse_sensor_data(
+        const std::string& data, 
+        const std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>& tag_map)
+    {
+        auto sensor_data = std::make_shared<std::unordered_map<std::string, std::string>>();
+
+        auto parse_tag_value = [&data](const std::string& tag) -> std::string {
+            std::string start_tag = "<" + tag + ">";
+            std::string end_tag = "</" + tag + ">";
+            size_t start_pos = data.find(start_tag);
+            size_t end_pos = data.find(end_tag);
+            if (start_pos != std::string::npos && end_pos != std::string::npos)
+            {
+                start_pos += start_tag.length();
+                return data.substr(start_pos, end_pos - start_pos);
+            }
+            return "";
+        };
+
+        for (const auto& tag : tag_map) {
+            (*sensor_data)[tag.first] = parse_tag_value(tag.first);
+        }
+
+        return sensor_data;
+    }
+
+    std::shared_ptr<std::unordered_map<std::string, std::string>> parse_gps_data(const std::string& data)
+    {
+        return parse_sensor_data(data, gps_tag_map);
+    }
+
+    std::shared_ptr<std::unordered_map<std::string, std::string>> parse_ahrs_data(const std::string& data)
+    {
+        return parse_sensor_data(data, ahrs_tag_map);
     }
 
     double string_to_double(const std::string& str)
@@ -155,10 +166,6 @@ private:
     serial::Serial serial_;
     std::string serial_port_;
     uint32_t baud_rate_;
-
-    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map;
-    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map;
-    std::unordered_map<std::string, std::shared_ptr<std::unordered_map<std::string, std::string>>(SerialReader::*)(const std::string&, const decltype(ahrs_tag_map)&)> sensor_tag_map;
 };
 
 int main(int argc, char *argv[])
