@@ -30,7 +30,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/ViconData.msg"
 "msg/DroneIMU.msg"
 "srv/Clock.srv"
-"msg/SensorData.msg.msg"
+"msg/SensorData.msg"
 DEPENDENCIES builtin_interfaces geometry_msgs std_msgs sensor_msgs)
 
 
