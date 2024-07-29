@@ -81,6 +81,8 @@ private:
     // Function to read sensor data from the serial port
     void read_sensor()
     {
+        string TheTag;
+
         if (serial_.available())
         {
             try {
@@ -99,6 +101,7 @@ private:
                             RCLCPP_INFO(this->get_logger(), "GPS data received: %s", line.c_str());
                         } 
                        
+
 
                         auto data = (this->*tag.second)(line);
 
@@ -119,12 +122,13 @@ private:
                             new_data = true;
                         }
                         // If we found the tag, break the loop
+                        tag.first == "GPS" ? TheTag = "GPS" : TheTag = "AHRS";
                         break;
                     }
                 }
 
                 // Parse the GPS data from the string
-                if (new_data && tag.first == "GPS")
+                if (new_data && TheTag == "GPS")
                 {
                     sensor_publisher_->publish(msg);
                 }
