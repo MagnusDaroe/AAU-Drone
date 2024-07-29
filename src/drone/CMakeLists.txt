@@ -23,7 +23,7 @@
 
 	# Create Cpp executables - Controller_node
 	add_executable(Sensor src/Sensor.cpp) # change name of node
-	ament_target_dependencies(GPS rclcpp serial drone_interfaces)
+	ament_target_dependencies(Sensor rclcpp serial drone_interfaces)
 
 	# Install Cpp executables
 	install(TARGETS
