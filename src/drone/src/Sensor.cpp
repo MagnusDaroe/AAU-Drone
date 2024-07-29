@@ -95,16 +95,17 @@ private:
                     // Check if the line contains the tag. Either GPS or AHRS
                     if (line.find("<" + tag.first + ">") != std::string::npos && line.find("</" + tag.first + ">") != std::string::npos)
                     {
-                        
+                        //print out line:
+                        RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
+
                         auto data = (this->*tag.second)(line);
+                        // print the data
+                        for (const auto& d : *data) {
+                            RCLCPP_INFO(this->get_logger(), "%s: %s", d.first.c_str(), d.second.c_str());
+                        }
+
                         if (data)
                         {
-
-                            //print data
-                            for (const auto& d : *data) {
-                                RCLCPP_INFO(this->get_logger(), "%s: %s", d.first.c_str(), d.second.c_str());
-                            }
-
                             // Iterate through each tag and set the corresponding member in the msg object
                             for (const auto& tag : ahrs_tag_map) {
                                 
