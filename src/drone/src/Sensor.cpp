@@ -24,28 +24,6 @@ public:
             {"gps", &SerialReader::parse_gps_data}
         };
 
-        ahrs_tag_map = {
-            {"acc_x", &drone_interfaces::msg::SensorData::acc_x},
-            {"acc_y", &drone_interfaces::msg::SensorData::acc_y},
-            {"acc_z", &drone_interfaces::msg::SensorData::acc_z},
-            {"gyro_x", &drone_interfaces::msg::SensorData::gyro_x},
-            {"gyro_y", &drone_interfaces::msg::SensorData::gyro_y},
-            {"gyro_z", &drone_interfaces::msg::SensorData::gyro_z},
-            {"mag_x", &drone_interfaces::msg::SensorData::mag_x},
-            {"mag_y", &drone_interfaces::msg::SensorData::mag_y},
-            {"mag_z", &drone_interfaces::msg::SensorData::mag_z},
-            {"altitude", &drone_interfaces::msg::SensorData::altitude}
-        };
-
-        gps_tag_map = {
-            {"lat", &drone_interfaces::msg::SensorData::lat},
-            {"lon", &drone_interfaces::msg::SensorData::lon},
-            {"time", &drone_interfaces::msg::SensorData::time},
-            {"speed", &drone_interfaces::msg::SensorData::speed},
-            {"pdop", &drone_interfaces::msg::SensorData::pdop},
-            {"hdop", &drone_interfaces::msg::SensorData::hdop}
-        };
-
         RCLCPP_INFO(this->get_logger(), "Starting Sensor node. Trying to connect to serial port %s.", serial_port_.c_str());
         sensor_publisher_ = this->create_publisher<drone_interfaces::msg::SensorData>("/sensor", 10);
         timer_ = this->create_wall_timer(5ms, std::bind(&SerialReader::read_sensor, this));
@@ -65,8 +43,28 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map;
-    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map;
+    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map = {
+        {"acc_x", &drone_interfaces::msg::SensorData::acc_x},
+        {"acc_y", &drone_interfaces::msg::SensorData::acc_y},
+        {"acc_z", &drone_interfaces::msg::SensorData::acc_z},
+        {"gyro_x", &drone_interfaces::msg::SensorData::gyro_x},
+        {"gyro_y", &drone_interfaces::msg::SensorData::gyro_y},
+        {"gyro_z", &drone_interfaces::msg::SensorData::gyro_z},
+        {"mag_x", &drone_interfaces::msg::SensorData::mag_x},
+        {"mag_y", &drone_interfaces::msg::SensorData::mag_y},
+        {"mag_z", &drone_interfaces::msg::SensorData::mag_z},
+        {"altitude", &drone_interfaces::msg::SensorData::altitude}
+    };
+
+    std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map = {
+        {"lat", &drone_interfaces::msg::SensorData::lat},
+        {"lon", &drone_interfaces::msg::SensorData::lon},
+        {"time", &drone_interfaces::msg::SensorData::time},
+        {"speed", &drone_interfaces::msg::SensorData::speed},
+        {"pdop", &drone_interfaces::msg::SensorData::pdop},
+        {"hdop", &drone_interfaces::msg::SensorData::hdop}
+    };
+
     std::unordered_map<std::string, std::shared_ptr<std::unordered_map<std::string, std::string>>(SerialReader::*)(const std::string&)> sensor_tag_map;
 
     void read_sensor()
