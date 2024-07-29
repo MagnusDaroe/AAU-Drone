@@ -24,7 +24,7 @@ public:
             {"gps", &SerialReader::parse_gps_data}
         };
 
-        ahrs_tag_map = std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>{
+        ahrs_tag_map = {
             {"acc_x", &drone_interfaces::msg::SensorData::acc_x},
             {"acc_y", &drone_interfaces::msg::SensorData::acc_y},
             {"acc_z", &drone_interfaces::msg::SensorData::acc_z},
@@ -37,7 +37,7 @@ public:
             {"altitude", &drone_interfaces::msg::SensorData::altitude}
         };
 
-        gps_tag_map = std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>{
+        gps_tag_map = {
             {"lat", &drone_interfaces::msg::SensorData::lat},
             {"lon", &drone_interfaces::msg::SensorData::lon},
             {"time", &drone_interfaces::msg::SensorData::time},
@@ -67,7 +67,7 @@ public:
 private:
     std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map;
     std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map;
-    std::unordered_map<std::string, std::shared_ptr<std::unordered_map<std::string, std::string>> (SerialReader::*)(const std::string&)> sensor_tag_map;
+    std::unordered_map<std::string, std::shared_ptr<std::unordered_map<std::string, std::string>>(SerialReader::*)(const std::string&)> sensor_tag_map;
 
     void read_sensor()
     {
