@@ -81,10 +81,11 @@ private:
     // Function to read sensor data from the serial port
     void read_sensor()
     {
-        String TheTag;
+
 
         if (serial_.available())
         {
+            std::string TheTag;
             try {
                 std::string line = serial_.readline();
                 //RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
