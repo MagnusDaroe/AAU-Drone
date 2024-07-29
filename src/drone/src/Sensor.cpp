@@ -67,6 +67,7 @@ public:
 private:
     std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> ahrs_tag_map;
     std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> gps_tag_map;
+    std::unordered_map<std::string, std::shared_ptr<std::unordered_map<std::string, std::string>> (SerialReader::*)(const std::string&)> sensor_tag_map;
 
     void read_sensor()
     {
