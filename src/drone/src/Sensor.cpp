@@ -111,6 +111,11 @@ private:
 
                         auto data = (this->*tag.second)(line);
 
+                        //Print the data
+                        for (const auto& tag : *data) {
+                            RCLCPP_INFO(this->get_logger(), "Tag: %s, Value: %s", tag.first.c_str(), tag.second.c_str());
+                        }
+
                         if (data)
                         {
                             // Iterate through each tag and set the corresponding member in the msg object
