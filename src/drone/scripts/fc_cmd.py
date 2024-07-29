@@ -428,7 +428,7 @@ class FC_Commander(Node):
         Controls the mode of the drone
         """
         # Initialize your rate controller
-        ##rate_controller = RateController(updaterate)
+        rate_controller = RateController(updaterate)
 
         # Main loop. Rclpy.ok() returns False when the node is shutdown
         while rclpy.ok():
