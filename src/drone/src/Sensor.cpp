@@ -111,9 +111,11 @@ private:
 
                         auto data = (this->*tag.second)(line);
 
-                        //Print the data
-                        for (const auto& tag : *data) {
-                            RCLCPP_INFO(this->get_logger(), "Tag: %s, Value: %s", tag.first.c_str(), tag.second.c_str());
+                        //Print the data of only the gps tag
+                        if (tag.first == "GPS") {
+                            for (const auto& [key, value] : *data) {
+                                RCLCPP_INFO(this->get_logger(), "GPS data: %s: %s", key.c_str(), value.c_str());
+                            }
                         }
 
                         if (data)
