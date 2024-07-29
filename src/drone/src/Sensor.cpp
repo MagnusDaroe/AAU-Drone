@@ -94,6 +94,10 @@ private:
                     msg.*(tag.second) = NAN;
                 }
 
+                for (const auto& tag : gps_tag_map) {
+                    msg.*(tag.second) = NAN;
+                }
+
                 // Determine if the line contains AHRS or GPS data
                 std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>* tag_map = nullptr;
 
