@@ -143,6 +143,7 @@ private:
     {
         auto sensor_data = std::make_shared<std::unordered_map<std::string, std::string>>();
 
+
         auto parse_tag_value = [&data](const std::string& tag) -> std::string {
             std::string start_tag = "<" + tag + ">";
             std::string end_tag = "</" + tag + ">";
@@ -155,6 +156,9 @@ private:
             }
             return "";
         };
+
+        //First find the tag, then find the nested tags and parse them
+
 
         for (const auto& tag : tag_map) {
             (*sensor_data)[tag.first] = parse_tag_value(tag.first);
