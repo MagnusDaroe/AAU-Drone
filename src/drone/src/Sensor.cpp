@@ -93,6 +93,11 @@ private:
                 auto msg = drone_interfaces::msg::SensorData();
                 bool new_data = false;
 
+                // Set all values to NaN
+                for (const auto& tag : ahrs_tag_map) {
+                    msg.*(tag.second) = NAN;
+                }
+
                 for (const auto& tag : sensor_tag_map) {
                     
                     // Check if the line contains the tag. Either GPS or AHRS
@@ -124,7 +129,6 @@ private:
                         }
                         // If we found the tag, break the loop
                         tag.first == "GPS" ? TheTag = "GPS" : TheTag = "AHRS";
-                        break;
                     }
                 }
 
