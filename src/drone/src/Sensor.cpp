@@ -124,7 +124,7 @@ private:
                 }
 
                 // Parse the GPS data from the string
-                if (new_data)
+                if (new_data && tag.first == "GPS")
                 {
                     sensor_publisher_->publish(msg);
                 }
