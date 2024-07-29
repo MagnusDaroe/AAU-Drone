@@ -71,7 +71,7 @@ private:
         std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> map;
         map["lat"] = &drone_interfaces::msg::SensorData::lat;
         map["lon"] = &drone_interfaces::msg::SensorData::lon;
-        map["time"] = &drone_interfaces::msg::SensorData::time;
+        //map["time"] = &drone_interfaces::msg::SensorData::time;
         map["speed"] = &drone_interfaces::msg::SensorData::speed;
         map["pdop"] = &drone_interfaces::msg::SensorData::pdop;
         map["hdop"] = &drone_interfaces::msg::SensorData::hdop;
