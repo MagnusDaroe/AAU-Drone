@@ -22,12 +22,12 @@
 	include_directories(include)
 
 	# Create Cpp executables - Controller_node
-	add_executable(GPS src/GPS.cpp) # change name of node
+	add_executable(Sensor src/Sensor.cpp) # change name of node
 	ament_target_dependencies(GPS rclcpp serial drone_interfaces)
 
 	# Install Cpp executables
 	install(TARGETS
-	GPS
+	Sensor
 	DESTINATION lib/${PROJECT_NAME}
 	)
 
