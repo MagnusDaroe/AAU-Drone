@@ -84,10 +84,15 @@ private:
         if (serial_.available()) {
             try {
                 std::string line = serial_.readline();
-                RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
+                //RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
 
                 auto msg = drone_interfaces::msg::SensorData();
                 bool new_data = false;
+
+                //Set all values to NAN
+                for (const auto& tag : ahrs_tag_map) {
+                    msg.*(tag.second) = NAN;
+                }
 
                 // Determine if the line contains AHRS or GPS data
                 std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>* tag_map = nullptr;
