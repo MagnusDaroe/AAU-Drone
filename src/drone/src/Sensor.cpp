@@ -91,15 +91,21 @@ private:
                 bool new_data = false;
 
                 for (const auto& tag : sensor_tag_map) {
-                    // Check if the line contains the tag
+                    
+                    // Check if the line contains the tag. Either GPS or AHRS
                     if (line.find("<" + tag.first + ">") != std::string::npos && line.find("</" + tag.first + ">") != std::string::npos)
                     {
                         
                         auto data = (this->*tag.second)(line);
                         if (data)
                         {
+                            RCLCPP_INFO(this->get_logger(), "Read from serial: %s", data.c_str());
+                            
                             // Iterate through each tag and set the corresponding member in the msg object
                             for (const auto& tag : ahrs_tag_map) {
+                                
+
+
                                 if (data->count(tag.first)) {
                                     msg.*(tag.second) = string_to_double(data->at(tag.first));
                                 } else {
