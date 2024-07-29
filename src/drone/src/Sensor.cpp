@@ -79,51 +79,51 @@ private:
     }
 
     // Function to read sensor data from the serial port
-    Kopier kode
-void read_sensor() {
-    if (serial_.available()) {
-        try {
-            std::string line = serial_.readline();
-            RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
 
-            auto msg = drone_interfaces::msg::SensorData();
-            bool new_data = false;
+    void read_sensor() {
+        if (serial_.available()) {
+            try {
+                std::string line = serial_.readline();
+                RCLCPP_INFO(this->get_logger(), "Read from serial: %s", line.c_str());
 
-            // Determine if the line contains AHRS or GPS data
-            std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>* tag_map = nullptr;
+                auto msg = drone_interfaces::msg::SensorData();
+                bool new_data = false;
 
-            if (line.find("<AHRS>") != std::string::npos) {
-                tag_map = &ahrs_tag_map;
-            } else if (line.find("<GPS>") != std::string::npos) {
-                tag_map = &gps_tag_map;
-            }
+                // Determine if the line contains AHRS or GPS data
+                std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*>* tag_map = nullptr;
 
-            if (tag_map) {
-                auto data = parse_sensor_data(line, *tag_map);
-
-                if (data) {
-                    // Iterate through each tag and set the corresponding member in the msg object
-                    for (const auto& tag : *tag_map) {
-                        const std::string& field = tag.first;
-                        if (data->count(field)) {
-                            msg.*(tag.second) = string_to_double(data->at(field));
-                        } else {
-                            msg.*(tag.second) = NAN;
-                        }
-                    }
-
-                    new_data = true;
+                if (line.find("<AHRS>") != std::string::npos) {
+                    tag_map = &ahrs_tag_map;
+                } else if (line.find("<GPS>") != std::string::npos) {
+                    tag_map = &gps_tag_map;
                 }
-            }
 
-            if (new_data) {
-                sensor_publisher_->publish(msg);
+                if (tag_map) {
+                    auto data = parse_sensor_data(line, *tag_map);
+
+                    if (data) {
+                        // Iterate through each tag and set the corresponding member in the msg object
+                        for (const auto& tag : *tag_map) {
+                            const std::string& field = tag.first;
+                            if (data->count(field)) {
+                                msg.*(tag.second) = string_to_double(data->at(field));
+                            } else {
+                                msg.*(tag.second) = NAN;
+                            }
+                        }
+
+                        new_data = true;
+                    }
+                }
+
+                if (new_data) {
+                    sensor_publisher_->publish(msg);
+                }
+            } catch (serial::IOException &e) {
+                RCLCPP_ERROR(this->get_logger(), "Error reading from serial port: %s", e.what());
             }
-        } catch (serial::IOException &e) {
-            RCLCPP_ERROR(this->get_logger(), "Error reading from serial port: %s", e.what());
         }
     }
-}
 
 
     // Function to parse sensor data using the provided tag map
