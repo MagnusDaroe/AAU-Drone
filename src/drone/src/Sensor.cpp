@@ -13,27 +13,7 @@ class SerialReader : public rclcpp::Node
 {
 public:
     SerialReader()
-    : Node("Sensor_node"),
-      ahrs_tag_map({
-          {"acc_x", &drone_interfaces::msg::SensorData::acc_x},
-          {"acc_y", &drone_interfaces::msg::SensorData::acc_y},
-          {"acc_z", &drone_interfaces::msg::SensorData::acc_z},
-          {"gyro_x", &drone_interfaces::msg::SensorData::gyro_x},
-          {"gyro_y", &drone_interfaces::msg::SensorData::gyro_y},
-          {"gyro_z", &drone_interfaces::msg::SensorData::gyro_z},
-          {"mag_x", &drone_interfaces::msg::SensorData::mag_x},
-          {"mag_y", &drone_interfaces::msg::SensorData::mag_y},
-          {"mag_z", &drone_interfaces::msg::SensorData::mag_z},
-          {"altitude", &drone_interfaces::msg::SensorData::altitude}
-      }),
-      gps_tag_map({
-          {"lat", &drone_interfaces::msg::SensorData::lat},
-          {"lon", &drone_interfaces::msg::SensorData::lon},
-          {"time", &drone_interfaces::msg::SensorData::time},
-          {"speed", &drone_interfaces::msg::SensorData::speed},
-          {"pdop", &drone_interfaces::msg::SensorData::pdop},
-          {"hdop", &drone_interfaces::msg::SensorData::hdop}
-      })
+    : Node("Sensor_node")
     {
         serial_port_ = "/dev/ttyUSB0"; 
         baud_rate_ = 115200;
@@ -42,6 +22,28 @@ public:
         sensor_tag_map = {
             {"ahrs", &SerialReader::parse_ahrs_data},
             {"gps", &SerialReader::parse_gps_data}
+        };
+
+        ahrs_tag_map = {
+            {"acc_x", &drone_interfaces::msg::SensorData::acc_x},
+            {"acc_y", &drone_interfaces::msg::SensorData::acc_y},
+            {"acc_z", &drone_interfaces::msg::SensorData::acc_z},
+            {"gyro_x", &drone_interfaces::msg::SensorData::gyro_x},
+            {"gyro_y", &drone_interfaces::msg::SensorData::gyro_y},
+            {"gyro_z", &drone_interfaces::msg::SensorData::gyro_z},
+            {"mag_x", &drone_interfaces::msg::SensorData::mag_x},
+            {"mag_y", &drone_interfaces::msg::SensorData::mag_y},
+            {"mag_z", &drone_interfaces::msg::SensorData::mag_z},
+            {"altitude", &drone_interfaces::msg::SensorData::altitude}
+        };
+
+        gps_tag_map = {
+            {"lat", &drone_interfaces::msg::SensorData::lat},
+            {"lon", &drone_interfaces::msg::SensorData::lon},
+            {"time", &drone_interfaces::msg::SensorData::time},
+            {"speed", &drone_interfaces::msg::SensorData::speed},
+            {"pdop", &drone_interfaces::msg::SensorData::pdop},
+            {"hdop", &drone_interfaces::msg::SensorData::hdop}
         };
 
         RCLCPP_INFO(this->get_logger(), "Starting Sensor node. Trying to connect to serial port %s.", serial_port_.c_str());
