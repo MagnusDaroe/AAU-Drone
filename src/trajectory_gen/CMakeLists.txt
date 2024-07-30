@@ -13,17 +13,23 @@ endif()
 
 
 
+
+
 install(DIRECTORY
-  
+  config
+  scripts
   DESTINATION share/${PROJECT_NAME}/
 )
 
 
 install(PROGRAMS
 
-scripts/goal_sender.py
+scripts/mpc_module.py
+
 DESTINATION lib/${PROJECT_NAME}
 )
+
+
 
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")

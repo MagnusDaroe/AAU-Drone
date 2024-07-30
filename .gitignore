@@ -11,3 +11,4 @@ drone_interfaces/install/
 drone_interfaces/log/
 .vscode/tasks.json
 .vscode/launch.json
+c_generated_code/
