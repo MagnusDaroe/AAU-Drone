@@ -62,7 +62,7 @@ private:
         map["mx"] = &drone_interfaces::msg::SensorData::mag_x;
         map["my"] = &drone_interfaces::msg::SensorData::mag_y;
         map["mz"] = &drone_interfaces::msg::SensorData::mag_z;
-        map["mh"] = &drone_interfaces::msg::SensorData::mag_h;
+        //map["mh"] = &drone_interfaces::msg::SensorData::mag_h;
         map["alt"] = &drone_interfaces::msg::SensorData::altitude;
         return map;
     }
@@ -106,6 +106,13 @@ private:
                     tag_map = &ahrs_tag_map;
                 } else if (line.find("<GPS>") != std::string::npos) {
                     tag_map = &gps_tag_map;
+                }
+                else {
+                    //Information about the sensor setup, which is not parseable:
+                    RCLCPP_INFO(this->get_logger(), "Sensor Setup: %s", line.c_str());
+                    
+                    //Make tag_map be false
+                    tag_map = nullptr;
                 }
 
                 if (tag_map) {
