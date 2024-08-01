@@ -18,7 +18,7 @@ public:
       gps_tag_map(initialize_gps_tag_map())
     {
         serial_port_ = "/dev/ttyUSB0"; 
-        baud_rate_ = 250000;
+        baud_rate_ = 115200;
 
         // Initializing sensor_tag_map with pointers to member functions
         sensor_tag_map = {
