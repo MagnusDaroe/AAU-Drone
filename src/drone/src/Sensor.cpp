@@ -53,16 +53,17 @@ private:
     // Static member function to initialize AHRS tag map
     static std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> initialize_ahrs_tag_map() {
         std::unordered_map<std::string, double drone_interfaces::msg::SensorData::*> map;
-        map["acc_x"] = &drone_interfaces::msg::SensorData::acc_x;
-        map["acc_y"] = &drone_interfaces::msg::SensorData::acc_y;
-        map["acc_z"] = &drone_interfaces::msg::SensorData::acc_z;
-        map["gyro_x"] = &drone_interfaces::msg::SensorData::gyro_x;
-        map["gyro_y"] = &drone_interfaces::msg::SensorData::gyro_y;
-        map["gyro_z"] = &drone_interfaces::msg::SensorData::gyro_z;
-        map["mag_x"] = &drone_interfaces::msg::SensorData::mag_x;
-        map["mag_y"] = &drone_interfaces::msg::SensorData::mag_y;
-        map["mag_z"] = &drone_interfaces::msg::SensorData::mag_z;
-        map["altitude"] = &drone_interfaces::msg::SensorData::altitude;
+        map["ax"] = &drone_interfaces::msg::SensorData::acc_x;
+        map["ay"] = &drone_interfaces::msg::SensorData::acc_y;
+        map["az"] = &drone_interfaces::msg::SensorData::acc_z;
+        map["gx"] = &drone_interfaces::msg::SensorData::gyro_x;
+        map["gy"] = &drone_interfaces::msg::SensorData::gyro_y;
+        map["gz"] = &drone_interfaces::msg::SensorData::gyro_z;
+        map["mx"] = &drone_interfaces::msg::SensorData::mag_x;
+        map["my"] = &drone_interfaces::msg::SensorData::mag_y;
+        map["mz"] = &drone_interfaces::msg::SensorData::mag_z;
+        map["mh"] = &drone_interfaces::msg::SensorData::mag_h;
+        map["alt"] = &drone_interfaces::msg::SensorData::altitude;
         return map;
     }
 
@@ -72,9 +73,9 @@ private:
         map["lat"] = &drone_interfaces::msg::SensorData::lat;
         map["lon"] = &drone_interfaces::msg::SensorData::lon;
         //map["time"] = &drone_interfaces::msg::SensorData::time;
-        map["speed"] = &drone_interfaces::msg::SensorData::speed;
-        map["pdop"] = &drone_interfaces::msg::SensorData::pdop;
-        map["hdop"] = &drone_interfaces::msg::SensorData::hdop;
+        map["v"] = &drone_interfaces::msg::SensorData::speed;
+        map["p"] = &drone_interfaces::msg::SensorData::pdop;
+        map["h"] = &drone_interfaces::msg::SensorData::hdop;
         return map;
     }
 
